@@ -128,6 +128,65 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     );
 }
 
+// ======================== DROPZONE COMPONENT ========================
+function FileUploader({
+    onFilesSelected,
+    accept,
+    multiple = false,
+    label = "Drag and drop files here, or click to browse"
+}: {
+    onFilesSelected: (files: File[]) => void,
+    accept?: string,
+    multiple?: boolean,
+    label?: string
+}) {
+    const [dragging, setDragging] = useState(false);
+
+    const handleDrag = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragging(true);
+        } else if (e.type === "dragleave") {
+            setDragging(false);
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const filesArray = Array.from(e.dataTransfer.files);
+            onFilesSelected(multiple ? filesArray : [filesArray[0]]);
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const filesArray = Array.from(e.target.files);
+            onFilesSelected(multiple ? filesArray : [filesArray[0]]);
+        }
+    };
+
+    return (
+        <label
+            className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-md cursor-pointer transition-colors ${dragging ? 'border-gold bg-gold/5' : 'border-gray-300 bg-white hover:bg-gray-50'}`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+        >
+            <div className="flex flex-col items-center justify-center pt-5 pb-6 pointer-events-none text-center px-4">
+                <Upload className={`w-8 h-8 mb-4 ${dragging ? 'text-gold' : 'text-gray-400'}`} />
+                <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">{label}</span></p>
+                <p className="text-xs text-gray-400">{multiple ? "You can select multiple files at once" : "Select a single file"}</p>
+            </div>
+            <input type="file" className="hidden" accept={accept} multiple={multiple} onChange={handleChange} />
+        </label>
+    );
+}
+
 // ======================== TAB CONTENT ========================
 function ImageManager() {
     const [files, setFiles] = useState<File[]>([]);
@@ -162,24 +221,47 @@ function ImageManager() {
         <div>
             <h2 className="font-serif text-2xl mb-8">Manage Images</h2>
 
-            <div className="flex flex-wrap gap-4 items-end bg-gray-50 p-6 border border-gray-200 mb-10">
-                <label className="flex-1 flex flex-col gap-2 min-w-[200px]">
-                    <span className="label-luxury !mb-0">Placement Category</span>
-                    <select value={category} onChange={e => setCategory(e.target.value)} className="input-luxury bg-white">
+            <div className="bg-gray-50 p-6 border border-gray-200 mb-10 flex flex-col gap-8">
+                <div>
+                    <span className="label-luxury mb-4 block">1. Select Placement Category</span>
+                    <select value={category} onChange={e => setCategory(e.target.value)} className="input-luxury bg-white max-w-sm rounded-none border border-gray-200 px-4">
                         <option value="gallery">General Gallery</option>
                         <option value="hero">Homepage Hero</option>
                         <option value="neighborhood">Kitusuru About Image</option>
                         <option value="studio">Studio Unit Image</option>
                         <option value="oneBed">One Bed Unit Image</option>
                     </select>
-                </label>
-                <label className="flex-1 flex flex-col gap-2 min-w-[200px]">
-                    <span className="label-luxury !mb-0">Select Files</span>
-                    <input type="file" multiple accept="image/*" onChange={e => setFiles(Array.from(e.target.files || []))} className="input-luxury bg-white py-2" />
-                </label>
-                <button onClick={upload} disabled={busy || !files.length} className="btn-gold flex items-center gap-2">
-                    <Upload size={14} /> {busy ? 'Uploading...' : 'Upload'}
-                </button>
+                </div>
+
+                <div>
+                    <span className="label-luxury mb-4 block">2. Upload Images</span>
+                    <FileUploader
+                        accept="image/*"
+                        multiple={true}
+                        label="Drag & Drop images here, or click to browse"
+                        onFilesSelected={(newFiles) => setFiles(prev => [...prev, ...newFiles])}
+                    />
+
+                    {files.length > 0 && (
+                        <div className="mt-4 p-5 bg-white border border-gray-200 shadow-sm">
+                            <h4 className="text-sm font-medium mb-4 flex items-center justify-between border-b pb-2">
+                                <span>Selected Files ({files.length})</span>
+                                <button onClick={() => setFiles([])} className="text-xs text-red-500 hover:text-red-700">Clear All</button>
+                            </h4>
+                            <ul className="text-sm text-gray-500 mb-6 space-y-2 max-h-40 overflow-y-auto pr-2">
+                                {files.map((f, i) => (
+                                    <li key={i} className="flex items-center justify-between bg-gray-50 p-2 rounded-sm border border-gray-100">
+                                        <span className="truncate pr-4 flex-1">{f.name}</span>
+                                        <button onClick={() => setFiles(files.filter((_, idx) => idx !== i))} className="text-gray-400 hover:text-red-500 p-1"><X size={14} /></button>
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={upload} disabled={busy} className="btn-gold w-full justify-center">
+                                {busy ? 'Uploading to Vercel...' : `Confirm Upload (${files.length} Files)`}
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
@@ -228,34 +310,54 @@ function RenderManager() {
         <div>
             <h2 className="font-serif text-2xl mb-8">3D Renders</h2>
 
-            <div className="flex flex-wrap gap-4 items-end bg-gray-50 p-6 border border-gray-200 mb-10">
-                <label className="flex-1 flex flex-col gap-2 min-w-[200px]">
-                    <span className="label-luxury !mb-0">Select Files (Images/Videos)</span>
-                    <input type="file" multiple onChange={e => setFiles(Array.from(e.target.files || []))} className="input-luxury bg-white py-2" />
-                </label>
-                <button onClick={upload} disabled={busy || !files.length} className="btn-gold flex items-center gap-2">
-                    <Upload size={14} /> {busy ? 'Uploading...' : 'Upload'}
-                </button>
+            <div className="bg-gray-50 p-6 border border-gray-200 mb-10">
+                <FileUploader
+                    multiple={true}
+                    label="Drag & Drop images or videos here, or click to browse"
+                    onFilesSelected={(newFiles) => setFiles(prev => [...prev, ...newFiles])}
+                />
+
+                {files.length > 0 && (
+                    <div className="mt-4 p-5 bg-white border border-gray-200 shadow-sm">
+                        <h4 className="text-sm font-medium mb-4 flex items-center justify-between border-b pb-2">
+                            <span>Selected Files ({files.length})</span>
+                            <button onClick={() => setFiles([])} className="text-xs text-red-500 hover:text-red-700">Clear All</button>
+                        </h4>
+                        <ul className="text-sm text-gray-500 mb-6 max-h-40 overflow-y-auto space-y-2 pr-2">
+                            {files.map((f, i) => (
+                                <li key={i} className="flex items-center justify-between bg-gray-50 p-2 rounded-sm border border-gray-100">
+                                    <span className="truncate pr-4 flex-1">{f.name}</span>
+                                    <button onClick={() => setFiles(files.filter((_, idx) => idx !== i))} className="text-gray-400 hover:text-red-500 p-1"><X size={14} /></button>
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={upload} disabled={busy} className="btn-gold w-full justify-center">
+                            {busy ? 'Uploading to Vercel...' : `Upload ${files.length} Files`}
+                        </button>
+                    </div>
+                )}
             </div>
 
             {renders.length === 0 ? <p className="text-sm text-gray-500">No renders uploaded.</p> : (
-                <table className="w-full text-left text-sm text-gray-600">
-                    <thead className="text-xs uppercase bg-gray-50 tracking-wider">
-                        <tr><th className="px-4 py-3 font-medium">Filename</th><th className="px-4 py-3 font-medium">Size</th><th className="px-4 py-3 font-medium">Actions</th></tr>
-                    </thead>
-                    <tbody>
-                        {renders.map(r => (
-                            <tr key={r.url} className="border-b border-gray-100 hover:bg-gray-50/50">
-                                <td className="px-4 py-3 truncate max-w-[200px]">{r.filename}</td>
-                                <td className="px-4 py-3">{(r.size / 1024 / 1024).toFixed(2)} MB</td>
-                                <td className="px-4 py-3 flex gap-4">
-                                    <a href={r.url} target="_blank" className="text-gold hover:underline">View</a>
-                                    <button onClick={() => remove(r.url)} className="text-red-500 hover:underline">Delete</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm text-gray-600">
+                        <thead className="text-xs uppercase bg-gray-50 tracking-wider">
+                            <tr><th className="px-4 py-3 font-medium">Filename</th><th className="px-4 py-3 font-medium">Size</th><th className="px-4 py-3 font-medium">Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            {renders.map(r => (
+                                <tr key={r.url} className="border-b border-gray-100 hover:bg-gray-50/50">
+                                    <td className="px-4 py-3 truncate max-w-[200px]">{r.filename}</td>
+                                    <td className="px-4 py-3">{(r.size / 1024 / 1024).toFixed(2)} MB</td>
+                                    <td className="px-4 py-3 flex gap-4">
+                                        <a href={r.url} target="_blank" className="text-gold hover:underline">View</a>
+                                        <button onClick={() => remove(r.url)} className="text-red-500 hover:underline">Delete</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
         </div>
     );
@@ -303,14 +405,26 @@ function BrochureManager() {
                 </div>
             )}
 
-            <div className="flex flex-wrap gap-4 items-end bg-gray-50 p-6 border border-gray-200">
-                <label className="flex-1 flex flex-col gap-2 min-w-[200px]">
-                    <span className="label-luxury !mb-0">Upload New PDF (Replaces current)</span>
-                    <input type="file" accept=".pdf" onChange={e => setFile(e.target.files?.[0] || null)} className="input-luxury bg-white py-2" />
-                </label>
-                <button onClick={upload} disabled={busy || !file} className="btn-primary flex items-center gap-2">
-                    <Upload size={14} /> {busy ? 'Uploading...' : 'Upload PDF'}
-                </button>
+            <div className="bg-gray-50 p-6 border border-gray-200">
+                <span className="label-luxury mb-4 block">Upload New PDF (Replaces current)</span>
+                <FileUploader
+                    accept=".pdf"
+                    multiple={false}
+                    label="Drag & Drop PDF here, or click to browse"
+                    onFilesSelected={(newFiles) => setFile(newFiles[0])}
+                />
+
+                {file && (
+                    <div className="mt-4 p-4 bg-white border border-gray-200 shadow-sm flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700 truncate pr-4">{file.name}</span>
+                        <div className="flex items-center gap-4 shrink-0">
+                            <button onClick={() => setFile(null)} className="text-xs text-red-500 hover:text-red-700">Cancel</button>
+                            <button onClick={upload} disabled={busy} className="btn-primary py-2 px-6 text-[0.65rem]">
+                                {busy ? 'Uploading...' : 'Confirm Upload'}
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
