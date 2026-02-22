@@ -12,7 +12,10 @@ export const revalidate = 60;
 
 async function getImages() {
     try {
-        const { blobs } = await list({ prefix: 'images/' });
+        const { blobs } = await list({
+            prefix: 'images/',
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+        });
         const images: Record<string, string> = { studio: '', oneBed: '' };
         const gallery: string[] = [];
 

@@ -15,7 +15,10 @@ import { verifyAuth } from '@/lib/auth';
 // Server-side data fetching directly in the component!
 async function getImages() {
   try {
-    const { blobs } = await list({ prefix: 'images/' });
+    const { blobs } = await list({
+      prefix: 'images/',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
     const images: Record<string, string> = {
       hero: '',
       neighborhood: '',

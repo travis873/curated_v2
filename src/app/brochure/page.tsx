@@ -11,7 +11,10 @@ export const revalidate = 60;
 
 async function getBrochure() {
     try {
-        const { blobs } = await list({ prefix: 'brochures/' });
+        const { blobs } = await list({
+            prefix: 'brochures/',
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+        });
         if (!blobs.length) return null;
         const latest = blobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())[0];
         return {

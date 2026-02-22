@@ -12,7 +12,10 @@ export const revalidate = 60;
 
 async function getRenders() {
     try {
-        const { blobs } = await list({ prefix: 'renders/' });
+        const { blobs } = await list({
+            prefix: 'renders/',
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+        });
         return blobs.map(b => ({
             url: b.url,
             filename: b.pathname.replace('renders/', ''),
