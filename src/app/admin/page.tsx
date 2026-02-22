@@ -133,7 +133,7 @@ function ImageManager() {
     const [files, setFiles] = useState<File[]>([]);
     const [category, setCategory] = useState('gallery');
     const [busy, setBusy] = useState(false);
-    const [images, setImages] = useState<{ id: string, url: string, filename: string }[]>([]);
+    const [images, setImages] = useState<{ id: string, url: string, filename: string, category?: string }[]>([]);
 
     const load = async () => {
         const r = await fetch('/api/images');

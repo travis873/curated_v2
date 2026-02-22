@@ -59,15 +59,18 @@
 
   /* ===== TYPOGRAPHY ===== */
   .display-xl {
-    @apply font-serif text-[clamp(3rem, 7vw, 6rem)] font-light leading-[1.05] tracking-tight;
+    @apply font-serif font-light leading-[1.05] tracking-tight;
+    font-size: clamp(3rem, 7vw, 6rem);
   }
 
   .display-lg {
-    @apply font-serif text-[clamp(2rem, 5vw, 4rem)] font-light leading-[1.1] tracking-tight;
+    @apply font-serif font-light leading-[1.1] tracking-tight;
+    font-size: clamp(2rem, 5vw, 4rem);
   }
 
   .display-md {
-    @apply font-serif text-[clamp(1.5rem, 3vw, 2.5rem)] font-light leading-[1.2];
+    @apply font-serif font-light leading-[1.2];
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
   }
 
   .label-sm {
@@ -88,15 +91,18 @@
 
   /* ===== BUTTONS ===== */
   .btn-primary {
-    @apply inline-flex items-center gap-2.5 px-8 py-3.5 bg-black text-warm-white font-sans text-xs font-medium tracking-[0.12em] uppercase border border-black cursor-pointer transition-all duration-400 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] no-underline hover:bg-gold hover:border-gold hover:text-black hover:-translate-y-px;
+    @apply inline-flex items-center gap-2.5 px-8 py-3.5 bg-black text-warm-white font-sans text-xs font-medium tracking-[0.12em] uppercase border border-black cursor-pointer transition-all duration-400 no-underline hover:bg-gold hover:border-gold hover:text-black hover:-translate-y-px;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .btn-outline {
-    @apply inline-flex items-center gap-2.5 px-8 py-3.5 bg-transparent text-black font-sans text-xs font-medium tracking-[0.12em] uppercase border border-black cursor-pointer transition-all duration-400 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] no-underline hover:bg-black hover:text-warm-white;
+    @apply inline-flex items-center gap-2.5 px-8 py-3.5 bg-transparent text-black font-sans text-xs font-medium tracking-[0.12em] uppercase border border-black cursor-pointer transition-all duration-400 no-underline hover:bg-black hover:text-warm-white;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .btn-gold {
-    @apply inline-flex items-center gap-2.5 px-8 py-3.5 bg-gold text-black font-sans text-xs font-medium tracking-[0.12em] uppercase border border-gold cursor-pointer transition-all duration-400 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] no-underline hover:bg-gold-dark hover:border-gold-dark hover:-translate-y-px;
+    @apply inline-flex items-center gap-2.5 px-8 py-3.5 bg-gold text-black font-sans text-xs font-medium tracking-[0.12em] uppercase border border-gold cursor-pointer transition-all duration-400 no-underline hover:bg-gold-dark hover:border-gold-dark hover:-translate-y-px;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .btn-ghost {
@@ -133,7 +139,8 @@
   }
 
   .img-reveal img {
-    @apply transition-transform duration-[800ms] ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)];
+    @apply transition-transform duration-[800ms];
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .img-reveal:hover img {
@@ -142,7 +149,11 @@
 
   /* ===== CARDS ===== */
   .card-luxury {
-    @apply bg-warm-white border border-gray-200 transition-all duration-400 hover:border-gold hover:shadow-[0_20px_60px_rgba(0, 0, 0, 0.08)] hover:-translate-y-1;
+    @apply bg-warm-white border border-gray-200 transition-all duration-400 hover:border-gold hover:-translate-y-1;
+  }
+
+  .card-luxury:hover {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
   }
 
   /* ===== STAT ITEMS ===== */
