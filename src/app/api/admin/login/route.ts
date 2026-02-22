@@ -9,10 +9,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'curated-dev-secret';
 
 export async function POST(request: Request) {
     try {
-        const { email, password } = await request.json();
+        const body = await request.json();
+        const email = (body.email || '').trim().toLowerCase();
+        const password = (body.password || '').trim();
 
-        if (!email || !password || email !== ADMIN_EMAIL) {
-            return NextResponse.json({ success: false, error: 'Invalid credentials' }, { status: 401 });
+        if (!email || !password || email !== ADMIN_EMAIL.trim().toLowerCase()) {
+            return NextResponse.json({ success: false, error: `Invalid email. Expected: ${ADMIN_EMAIL}` }, { status: 401 });
         }
 
         const ADMIN_HASH = process.env.ADMIN_PASSWORD_HASH;
@@ -24,7 +26,7 @@ export async function POST(request: Request) {
         }
 
         if (!valid) {
-            return NextResponse.json({ success: false, error: 'Invalid credentials' }, { status: 401 });
+            return NextResponse.json({ success: false, error: 'Invalid password. Check your ADMIN_PASSWORD environment variable.' }, { status: 401 });
         }
 
         const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '24h' });

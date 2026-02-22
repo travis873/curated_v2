@@ -39,8 +39,12 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            if (res.ok) onLogin();
-            else setError('Invalid credentials');
+            const data = await res.json();
+            if (res.ok && data.success) {
+                onLogin();
+            } else {
+                setError(data.error || 'Invalid credentials');
+            }
         } catch {
             setError('Network error');
         } finally {
