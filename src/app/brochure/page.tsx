@@ -7,7 +7,7 @@ import SmoothScroll from '@/components/SmoothScroll';
 import { FadeIn, Reveal } from '@/components/Reveal';
 import { verifyAuth } from '@/lib/auth';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 async function getBrochure() {
     try {

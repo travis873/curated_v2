@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { list } from '@vercel/blob';
 
 import Navigation from '@/components/Navigation';
@@ -7,7 +8,7 @@ import SmoothScroll from '@/components/SmoothScroll';
 import { FadeIn, Reveal } from '@/components/Reveal';
 import { verifyAuth } from '@/lib/auth';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 async function getRenders() {
     try {
@@ -60,7 +61,7 @@ export default async function RendersPage() {
                                             <div className="bg-black/50 border border-gold/10 overflow-hidden group">
                                                 <div className="aspect-[4/3] bg-black relative">
                                                     {isImage ? (
-                                                        <img src={r.url} alt={r.filename} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100" />
+                                                        <Image src={r.url} alt={r.filename} fill className="object-cover group-hover:scale-[1.05] transition-transform duration-700 opacity-80 group-hover:opacity-100" />
                                                     ) : isVideo ? (
                                                         <video src={r.url} controls muted loop className="w-full h-full object-cover" />
                                                     ) : (

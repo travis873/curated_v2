@@ -8,7 +8,7 @@ import SmoothScroll from '@/components/SmoothScroll';
 import { FadeIn, Reveal } from '@/components/Reveal';
 import { verifyAuth } from '@/lib/auth';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 async function getImages() {
     try {
@@ -135,7 +135,7 @@ export default async function ProjectPage() {
                                 {images.gallery.map((url, i) => (
                                     <Reveal key={url} delay={(i % 3) * 0.1}>
                                         <div className="relative group overflow-hidden break-inside-avoid shadow-sm hover:shadow-xl transition-all duration-500">
-                                            <img src={url} alt={`Gallery image ${i}`} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <Image src={url} alt={`Gallery image ${i}`} width={800} height={800} className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700" />
                                         </div>
                                     </Reveal>
                                 ))}

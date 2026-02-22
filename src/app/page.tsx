@@ -1,6 +1,6 @@
-// We need to tell Next.js to dynamically render this page on every request 
-// instead of building it once statically, so it fetches live uploaded images.
-export const dynamic = 'force-dynamic';
+// Regenerate the page in the background every 60 seconds (ISR)
+// This makes the page load instantly from the CDN edge cache
+export const revalidate = 60;
 
 import Image from 'next/image';
 import Link from 'next/link';
